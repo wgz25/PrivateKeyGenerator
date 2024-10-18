@@ -1,8 +1,8 @@
 import base64 # import base64 module for encoding/decoding
 
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import padding #research what this does
-from cryptography.hazmat.primitives import hashes, serialization # research what these do
+from cryptography.hazmat.primitives.asymmetric import padding # padding is a way to add cryptographic problems in order to reduce the success of guessing the final states in encryption correctly.
+from cryptography.hazmat.primitives import hashes, serialization # ways to convert asymmetric keys into bytes. hashing is converting data into a fixed-length string.
 
 
 #enter path to generated private key file.
@@ -22,10 +22,11 @@ def load_private_key(input_pem_file_path): #
 def encrypt_message(private_key, message):
     encrypted = private_key.public_key().encrypt(
         message.encode('utf-8'), # this converts the message into bytes
+        # padding.OAEP referes to Optimal Asymmetric Encryption Padding. padding is something used in cryptography to make data fulfill/conform to data size requirements.
         padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()),
-            algorithm=hashes.SHA256(),
-            label=None
+            mgf=padding.MGF1(algorithm=hashes.SHA256()), # this line specifies the MGF (mask generation function) used in OAEP. it generates a mask that is used to hide the plaintext. SHA256 means it uses the SHA-256 hash function.
+            algorithm=hashes.SHA256(), # specifies hash algorithm used to hash the data. this is used for both padding as well as mask generation.
+            label=None # no additional context to add to padding process
         )
     )
     return encrypted
